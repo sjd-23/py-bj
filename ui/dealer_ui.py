@@ -27,14 +27,20 @@ class DealerUI:
             ((8, 11), "dark orange"),
             ((12, 15), "orange"),
             ((16, 20), "green"),
-            ((21, 21), "pink"),
-            ((22, float('inf')), "purple")
+            ((21, 21), (247, 179, 197)),
+            ((22, float('inf')), (255, 116, 145))
         ]
 
         for (start, end), color in color_ranges:
             if start <= val <= end:
                 draw_color = color
 
-        hand_value_string = "Dealer's value: " + str(val)
+        if val >= 22:
+            hand_value_string = "Bust!"
+        elif val == 21:
+            hand_value_string = "Blackjack!"
+        else:
+            hand_value_string = "Dealer's value: " + str(val)
+
         text = self.font.render(hand_value_string, True, draw_color)
         screen.blit(text, (self.area.x + 2, self.area.y + self.area.h + 10))

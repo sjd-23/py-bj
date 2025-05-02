@@ -27,8 +27,8 @@ class HandUI:
             ((8, 11), "dark orange"),
             ((12, 15), "orange"),
             ((16, 20), "green"),
-            ((21, 21), "pink"),
-            ((22, float('inf')), (230, 3, 255))
+            ((21, 21), (247, 179, 197)),
+            ((22, float('inf')), (255, 116, 145))
         ]
 
         for (start, end), color in color_ranges:
@@ -36,9 +36,9 @@ class HandUI:
                 draw_color = color
 
         if val >= 22:
-            hand_value_string = "Bust with " + str(val) + " :("
+            hand_value_string = "Bust!"
         elif val == 21:
-            hand_value_string = "Hand value: " + str(val) + "!"
+            hand_value_string = "Blackjack!"
         else:
             hand_value_string = "Hand value: " + str(val)
 

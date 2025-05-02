@@ -59,3 +59,8 @@ class GameOverUI:
 
         result_text = self.font.render(result_string, True, result_color)
         screen.blit(result_text, result_location)
+
+    def reset_results(self):
+        self.hidden = True
+        self.player_won = True
+        self.push = False

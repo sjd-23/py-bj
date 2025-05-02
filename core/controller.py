@@ -8,28 +8,38 @@ class Controller:
         self.player_turn = True
         self.dealer_turn = False
         self.player_bust = False
+        self.round_over = False
 
     def update(self):
         self._detect_input()
 
-        # Initial deal
-        if len(self.model.player.hand) < 2:
-            self.model.deck.deal_into(self.model.player)
-        if len(self.model.dealer.hand) < 1:
-            self.model.deck.deal_into(self.model.dealer)
+        if not self.round_over:
+            # Initial deal
+            if len(self.model.player.hand) < 2:
+                self.model.deck.deal_into(self.model.player)
+            if len(self.model.dealer.hand) < 1:
+                self.model.deck.deal_into(self.model.dealer)
 
-        if self.model.player.calculate_hand_value() >= 22:
-            self.player_bust = True
-            self.player_turn = False
-            self.view.game_over_ui.player_won = False
+            # Check for player bust
+            if self.model.player.calculate_hand_value() >= 22:
+                self.player_bust = True
+                self.player_turn = False
+                self.view.game_over_ui.player_won = False
 
-        if not self.player_turn:
-            self.view.hit_ui.color = (195, 82, 82)
-            self.view.stay_ui.color = (192, 82, 82)
-            if not self.player_bust:
-                self._handle_dealer_turn()
-            else:
-                self._handle_game_over()
+            # Check for player blackjack
+            if self.model.player.calculate_hand_value() == 21:
+                self.player_turn = False
+
+            # Handle dealer turn
+            if not self.player_turn:
+                self.view.hit_ui.color = (195, 82, 82)
+                self.view.stay_ui.color = (192, 82, 82)
+                if not self.player_bust:
+                    self._handle_dealer_turn()
+                else:
+                    self.view.record_ui.loss_count += 1
+                    self.view.game_over_ui.hidden = False
+                self.round_over = True
 
     def _detect_input(self):
         for event in pygame.event.get():
@@ -90,35 +100,38 @@ class Controller:
             elif self.view.game_over_ui.quit_area.collidepoint(event.pos) and not self.view.game_over_ui.hidden:
                 self.game_running = False
             elif self.view.game_over_ui.again_area.collidepoint(event.pos) and not self.view.game_over_ui.hidden:
-                self.model.deck.reset()
-                self.model.deck.shuffle()
-                self.model.player.hand = []
-                self.model.dealer.hand = []
-                self.player_turn = True
-                self.dealer_turn = False
-                self.player_bust = False
-                self.view.game_over_ui.hidden = True
-                self.view.game_over_ui.player_won = True
-                self.view.game_over_ui.push = False
+                self._handle_game_over()
 
 
     def _handle_mouse_up(self, event):
-        if event.button == 1:
-            pass
+        pass
 
     def _handle_dealer_turn(self):
-
+        self.view.draw()
+        pygame.time.wait(850) # Initial wait after players turn concluded
         while self.model.dealer.calculate_hand_value() < 17:
             self.model.deck.deal_into(self.model.dealer)
-            self.view.draw()
+            self.view.draw() # This draw call breaks MVC architecture rules
             pygame.time.wait(850)
 
         if 21 >= self.model.dealer.calculate_hand_value() > self.model.player.calculate_hand_value():
             self.view.game_over_ui.player_won = False
+            self.view.record_ui.loss_count += 1
         elif 21 >= self.model.dealer.calculate_hand_value() == self.model.player.calculate_hand_value():
             self.view.game_over_ui.push = True
+            self.view.record_ui.push_count += 1
+        else:
+            self.view.record_ui.win_count += 1
 
-        self._handle_game_over()
+        self.view.game_over_ui.hidden = False
 
     def _handle_game_over(self):
-        self.view.game_over_ui.hidden = False
+        self.model.deck.reset()
+        self.model.deck.shuffle()
+        self.model.player.hand = []
+        self.model.dealer.hand = []
+        self.player_turn = True
+        self.dealer_turn = False
+        self.player_bust = False
+        self.round_over = False
+        self.view.game_over_ui.reset_results()
