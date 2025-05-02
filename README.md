@@ -6,3 +6,6 @@ Thank's for checking out my game! It's an implementation of Blackjack built in P
 <p align="center">
   <img src="assets/readme/honest-work.png" alt="Honest work meme" width="200">
 </p>
+
+### Assets
+[The Ultimate Game Comopnent Kit by Rad Potato](https://rad-potato.itch.io/pixel-perfect-ultimate-game-component-kit)
