@@ -7,11 +7,13 @@ def main():
     # Configuration variables
     window_size = (1280, 720)
     window_caption = "PyBJ"
+    window_icon = py.image.load("assets/sprites/cards/s_a.png")
     fps = 144
 
     # PyGame setup
     py.init()
     py.display.set_caption(window_caption)
+    py.display.set_icon(window_icon)
     screen = py.display.set_mode(window_size)
     clock = py.time.Clock()
     font = py.font.Font("assets/fonts/Minecraft.ttf", 32)
