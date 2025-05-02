@@ -14,11 +14,12 @@ def main():
     py.display.set_caption(window_caption)
     screen = py.display.set_mode(window_size)
     clock = py.time.Clock()
+    font = py.font.Font("assets/fonts/Minecraft.ttf", 32)
 
     # Model - View - Controller setup
     model = Model()
-    controller = Controller()
-    view = View(screen)
+    view = View(screen, model, font)
+    controller = Controller(model, view)
 
     # Main loop
     while controller.game_running:
